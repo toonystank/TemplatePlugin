@@ -1,74 +1,50 @@
-package com.toonystank.requisite.Modules.managers;
+package com.toonystank.requisitertp.command;
 
-import com.toonystank.requisite.Requisite;
+import com.toonystank.requisitertp.RequisiteRTP;
+import com.toonystank.requisitertp.utils.MessageUtils;
 import lombok.Getter;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.List;
+import java.util.*;
 
 @Getter
 @SuppressWarnings("unused")
-public abstract class BaseCommand implements CommandExecutor,TabCompleter{
+public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 
-    private final Requisite plugin;
+    private final RequisiteRTP plugin;
     private final Command commandData;
-    /**
-     * Constructor to create a new command with specific properties.
-     *
-     * @param plugin            The plugin instance.
-     * @param name              The name of the command.
-     * @param playerOnlyCommand Whether the command can only be executed by a player.
-     * @param requireArgument   Whether the command requires arguments.
-     * @param description       The description of the command.
-     * @param usage             The usage message for the command.
-     * @param permission        The permission required to use the command.
-     * @param aliases           A list of command aliases.
-     */
-    protected BaseCommand(Requisite plugin, String name, boolean playerOnlyCommand, boolean requireArgument, String description, String usage, String permission, List<String> aliases) {
+    private final Map<String, SubCommand> subCommands = new HashMap<>();
+
+    protected BaseCommand(RequisiteRTP plugin, String name, boolean playerOnlyCommand, boolean requireArgument, String description, String usage, String permission, List<String> aliases) {
         this.plugin = plugin;
-        this.commandData = new Command(name,playerOnlyCommand,requireArgument, description, usage, permission, aliases);
+        this.commandData = new Command(name, playerOnlyCommand, requireArgument, description, usage, permission, aliases);
+        registerCommand(commandData);
+    }
+    protected BaseCommand(RequisiteRTP plugin, String name, boolean playerOnlyCommand, boolean requireArgument, String description, String usage, String permission, String... aliases) {
+        this.plugin = plugin;
+        this.commandData = new Command(name, playerOnlyCommand, requireArgument, description, usage, permission, Arrays.asList(aliases));
         registerCommand(commandData);
     }
 
-    /**
-     * Constructor to create a command using an existing command data object.
-     *
-     * @param plugin      The plugin instance.
-     * @param commandData The command data containing properties of the command.
-     */
-    protected BaseCommand(Requisite plugin, Command commandData) {
+    protected BaseCommand(RequisiteRTP plugin, Command commandData) {
         this.plugin = plugin;
         this.commandData = commandData;
         registerCommand(commandData);
     }
 
-    /**
-     * Handles tab completion logic for the command. Must be implemented by subclasses.
-     *
-     * @param sender The command sender (player or console).
-     * @param args   The arguments provided with the command.
-     * @return A list of possible completions for the current argument.
-     */
+    public void registerSubCommand(String name, SubCommand subCommand) {
+        subCommands.put(name.toLowerCase(), subCommand);
+    }
+
     public abstract List<String> onTabComplete(CommandSender sender, String[] args);
 
-    /**
-     * Executes the command logic. Must be implemented by subclasses.
-     *
-     * @param sender The command sender console.
-     * @param args   The arguments provided with the command.
-     */
     public abstract void execute(ConsoleCommandSender sender, String[] args);
-    /**
-     * Executes the command logic for a player. Must be implemented by subclasses.
-     * @param player The player executing the command.
-     * @param args  The arguments provided with the command.
-     */
+
     public abstract void execute(Player player, String[] args);
 
     private void registerCommand(Command commandData) {
@@ -79,7 +55,7 @@ public abstract class BaseCommand implements CommandExecutor,TabCompleter{
         if (command != null) {
             command.setExecutor(this);
             command.setTabCompleter(this);
-            if (commandData.aliases() != null && commandData.aliases().isEmpty()) {
+            if (commandData.aliases() != null && !commandData.aliases().isEmpty()) {
                 command.setAliases(commandData.aliases());
             }
             if (commandData.description() != null && !commandData.description().isEmpty()) {
@@ -90,31 +66,18 @@ public abstract class BaseCommand implements CommandExecutor,TabCompleter{
             }
             command.setPermission(commandData.permission());
         } else {
-            plugin.getLogger().warning("Failed to register command: " + commandData.name());
+            MessageUtils.warning("Failed to register command: " + commandData.name());
         }
     }
+
     private PluginCommand createPluginCommand(Command commandData) {
         try {
-            Constructor<PluginCommand> constructor = PluginCommand.class
-                    .getDeclaredConstructor(String.class, Plugin.class);
+            Constructor<PluginCommand> constructor = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
             constructor.setAccessible(true);
             PluginCommand command = constructor.newInstance(commandData.name(), plugin);
             command.setExecutor(this);
             command.setTabCompleter(this);
-            if (commandData.description() != null) {
-                command.setDescription(commandData.description());
-            }
-            if (commandData.usage() != null) {
-                command.setUsage(commandData.usage());
-            }
-            if (commandData.permission() != null) {
-                command.setPermission(commandData.permission());
-            }
-            if (commandData.aliases() != null) {
-                command.setAliases(commandData.aliases());
-            }
-            Field commandMapField = plugin.getServer().getPluginManager().getClass()
-                    .getDeclaredField("commandMap");
+            Field commandMapField = plugin.getServer().getPluginManager().getClass().getDeclaredField("commandMap");
             commandMapField.setAccessible(true);
             CommandMap commandMap = (CommandMap) commandMapField.get(plugin.getServer().getPluginManager());
             commandMap.register(plugin.getName(), command);
@@ -126,7 +89,7 @@ public abstract class BaseCommand implements CommandExecutor,TabCompleter{
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, org.bukkit.command.@NotNull Command command, @NotNull String s, @NotNull String @NotNull [] args) {
+    public boolean onCommand(@NotNull CommandSender sender, org.bukkit.command.@NotNull Command command, @NotNull String s, @NotNull String[] args) {
         if (commandData.playerOnlyCommand() && !(sender instanceof Player)) {
             sender.sendMessage(plugin.getMainConfig().getLanguageConfig().getPlayerOnly());
             return true;
@@ -135,10 +98,17 @@ public abstract class BaseCommand implements CommandExecutor,TabCompleter{
             sender.sendMessage(plugin.getMainConfig().getLanguageConfig().getNoPermission());
             return true;
         }
-        if (commandData.requireArguments() && args.length == 0 && commandData.usage() != null) {
-            sender.sendMessage(commandData.usage());
-            return true;
+
+        // Handle subcommands
+        if (args.length > 0) {
+            SubCommand subCommand = subCommands.get(args[0].toLowerCase());
+            if (subCommand != null) {
+                subCommand.execute(sender, Arrays.copyOfRange(args, 1, args.length));
+                return true;
+            }
         }
+
+        // Default behavior
         if (sender instanceof Player) {
             execute((Player) sender, args);
         } else if (sender instanceof ConsoleCommandSender) {
@@ -146,12 +116,45 @@ public abstract class BaseCommand implements CommandExecutor,TabCompleter{
         }
         return true;
     }
+
     @Override
-    public List<String> onTabComplete(@NotNull CommandSender sender, org.bukkit.command.@NotNull Command command, @NotNull String s, @NotNull String @NotNull [] args) {
-        return onTabComplete(sender, args);
+    public List<String> onTabComplete(@NotNull CommandSender sender, org.bukkit.command.@NotNull Command command, @NotNull String s, @NotNull String[] args) {
+        if (args.length == 1) {
+            return new ArrayList<>(subCommands.keySet());
+        } else if (args.length > 1) {
+            SubCommand subCommand = subCommands.get(args[0].toLowerCase());
+            if (subCommand != null) {
+                return subCommand.onTabComplete(sender, Arrays.copyOfRange(args, 1, args.length));
+            }
+        }
+        return Collections.emptyList();
     }
 
-    public record Command(String name, boolean playerOnlyCommand, boolean requireArguments, @Nullable String description, @Nullable String usage, @Nullable String permission, @Nullable List<String> aliases) {
-    }
+    public static class Command {
+        private final String name;
+        private final boolean playerOnlyCommand;
+        private final boolean requireArguments;
+        private final String description;
+        private final String usage;
+        private final String permission;
+        private final List<String> aliases;
 
+        public Command(String name, boolean playerOnlyCommand, boolean requireArguments, String description, String usage, String permission, List<String> aliases) {
+            this.name = name;
+            this.playerOnlyCommand = playerOnlyCommand;
+            this.requireArguments = requireArguments;
+            this.description = description;
+            this.usage = usage;
+            this.permission = permission;
+            this.aliases = aliases;
+        }
+
+        public String name() { return name; }
+        public boolean playerOnlyCommand() { return playerOnlyCommand; }
+        public boolean requireArguments() { return requireArguments; }
+        public String description() { return description; }
+        public String usage() { return usage; }
+        public String permission() { return permission; }
+        public List<String> aliases() { return aliases; }
+    }
 }

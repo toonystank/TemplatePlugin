@@ -1,8 +1,9 @@
-package com.toonystank.requisite.utils;
+package com.toonystank.requisitertp.utils;
 
-import com.toonystank.requisite.Requisite;
+import com.toonystank.requisitertp.RequisiteRTP;
 import de.themoep.minedown.adventure.MineDown;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -15,9 +16,16 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class MessageUtils {
+
+    private static BukkitAudiences audience;
+
+    public MessageUtils(BukkitAudiences bukkitAudiences) {
+        audience = bukkitAudiences;
+    }
 
 
     public static void sendMessage(List<Player> sender, String message) {
@@ -60,31 +68,32 @@ public class MessageUtils {
             sendMessage(sender,message);
             return;
         }
-        if (!(sender instanceof Player player)) {
+        if (!(sender instanceof Player)) {
             sendMessage(sender,message);
             return;
         }
+        Player player = (Player) sender;
         message = formatString(message);
-        player.sendTitle(message,"",10,70,10);
+        player.sendTitle(message,"");
     }
     public static void sendMessage(CommandSender sender, String message) {
         MessageUtils.toConsole(message  + "  sending to player " + sender ,true );
-        if (Requisite.getInstance().getMainConfig().isSmallText()) {
+        if (RequisiteRTP.getInstance().getMainConfig().isSmallText()) {
             message = SmallLetterConvertor.convert(message);
         }
         Component component = new MineDown(message).toComponent();
         component = component.decoration(TextDecoration.ITALIC, false);
-        Audience.audience(sender).sendMessage(component);
+        audience.sender(sender).sendMessage(component);
     }
     public static void sendMessage(Player sender, Component message) {
         sendMessage((CommandSender) sender, message);
     }
     public static void sendMessage(CommandSender sender, Component message) {
         message = message.decoration(TextDecoration.ITALIC, false);
-        Audience.audience(sender).sendMessage(message);
+        audience.sender(sender).sendMessage(message);
     }
     public static @NotNull List<Component> format(List<String> list) {
-        return list.stream().map(MessageUtils::format).toList();
+        return list.stream().map(MessageUtils::format).collect(Collectors.toList());
     }
     public static @NotNull Component format(String message) {
         return format(message,false);
@@ -115,22 +124,22 @@ public class MessageUtils {
     }
     public static void toConsole(String message, boolean debug) {
         if (debug) {
-            if (!Requisite.getInstance().getMainConfig().isDebug()) return;
+            if (!RequisiteRTP.getInstance().getMainConfig().isDebug()) return;
         }
-        message = "&a[RolleriteEssentials]&r " + message;
+        message = "&a[RequisiteRTP]&r " + message;
         Component component = new MineDown(message).toComponent();
         toConsole(component, debug);
     }
     public static void toConsole(Component component, boolean debug) {
         if (debug) {
-            if (!Requisite.getInstance().getMainConfig().isDebug()) return;
+            if (!RequisiteRTP.getInstance().getMainConfig().isDebug()) return;
         }
         component = component.decoration(TextDecoration.ITALIC,false);
-        Audience.audience(Requisite.getInstance().getServer().getConsoleSender()).sendMessage(component);
+        audience.sender(RequisiteRTP.getInstance().getServer().getConsoleSender()).sendMessage(component);
     }
     public static void error(String message) {
-        message = message + ". Server version: " + Requisite.getInstance().getServer().getVersion() + ". Plugin version: " + Requisite.getInstance().getDescription().getVersion() + ". Please report this error to the plugin developer.";
-        message = "[RolleriteEssentials] " + message;
+        message = message + ". Server version: " + RequisiteRTP.getInstance().getServer().getVersion() + ". Plugin version: " + RequisiteRTP.getInstance().getDescription().getVersion() + ". Please report this error to the plugin developer.";
+        message = "[RequisiteRTP] " + message;
         Component component = new MineDown(message).toComponent();
         error(component);
     }
@@ -138,34 +147,34 @@ public class MessageUtils {
         try {
             component = component.decoration(TextDecoration.ITALIC, false);
             component = component.color(TextColor.fromHexString("#CF203E"));
-            Audience.audience(Requisite.getInstance().getServer().getConsoleSender()).sendMessage(component);
+            audience.sender(RequisiteRTP.getInstance().getServer().getConsoleSender()).sendMessage(component);
         } catch (NullPointerException ignored) {
             error("an error occurred while sending a message");
         }
     }
     public static void debug(String message) {
-        if (!Requisite.getInstance().getMainConfig().isDebug()) return;
-        message = message + ". Server version: " + Requisite.getInstance().getServer().getVersion() + ". Plugin version: " + Requisite.getInstance().getDescription().getVersion() + ". To stop receiving this messages please update your config.yml";
+        if (!RequisiteRTP.getInstance().getMainConfig().isDebug()) return;
+        message = message + ". Server version: " + RequisiteRTP.getInstance().getServer().getVersion() + ". Plugin version: " + RequisiteRTP.getInstance().getDescription().getVersion() + ". To stop receiving this messages please update your config.yml";
         Component component = new MineDown(message).toComponent();
         debug(component);
     }
     public static void debug(Component component) {
         try {
             component = component.decoration(TextDecoration.ITALIC, false);
-            Audience.audience(Requisite.getInstance().getServer().getConsoleSender()).sendMessage(component);
+            audience.sender(RequisiteRTP.getInstance().getServer().getConsoleSender()).sendMessage(component);
         } catch (NullPointerException ignored) {
             error("an error occurred while sending a message");
         }
     }
     public static void warning(String message) {
-        message = "[RolleriteEssentials] " + message;
+        message = "[RequisiteRTP] " + message;
         Component component = new MineDown(message).toComponent();
         warning(component);
     }
     public static void warning(Component component) {
         component = component.decoration(TextDecoration.ITALIC,false);
         component = component.color(TextColor.fromHexString("#FFC107"));
-        Audience.audience(Requisite.getInstance().getServer().getConsoleSender()).sendMessage(component);
+        audience.sender(RequisiteRTP.getInstance().getServer().getConsoleSender()).sendMessage(component);
     }
     public static String replaceGrayWithWhite(String inputString) {
         if (inputString.contains("&7")) inputString = inputString.replace("&7", "&f");

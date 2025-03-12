@@ -1,10 +1,11 @@
-package com.toonystank.requisite.utils;
+package com.toonystank.requisitertp.utils;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class SmallLetterConvertor {
 
@@ -16,7 +17,7 @@ public class SmallLetterConvertor {
     }
 
     public static List<String> convert(List<String> list) {
-        return list.stream().map(SmallLetterConvertor::convert).toList();
+        return list.stream().map(SmallLetterConvertor::convert).collect(Collectors.toList());
     }
     public static String convert(String input) {
         if (input == null) {
