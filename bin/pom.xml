@@ -5,11 +5,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.toonystank</groupId>
-  <artifactId>TemplatePlugin</artifactId>
+  <artifactId>RequisiteRTP</artifactId>
   <version>1.0</version>
   <packaging>jar</packaging>
 
-  <name>TemplatePlugin</name>
+  <name>RequisiteRTP</name>
 
     <properties>
         <maven.compiler.release>8</maven.compiler.release>
@@ -155,26 +155,6 @@
                   <artifactId>gson</artifactId>
               </exclusion>
           </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>de.themoep</groupId>
-        <artifactId>minedown</artifactId>
-        <version>1.7.1-SNAPSHOT</version>
-                  <exclusions>
-              <exclusion>
-                  <groupId>net.kyori</groupId>
-                  <artifactId>adventure-api</artifactId>
-              </exclusion>
-              <exclusion>
-                  <groupId>net.kyori</groupId>
-                  <artifactId>adventure-platform-bukkit</artifactId>
-              </exclusion>
-              <exclusion>
-                  <groupId>com.google.code.gson</groupId>
-                  <artifactId>gson</artifactId>
-              </exclusion>
-          </exclusions>
-        <scope>compile</scope>
       </dependency>
       <!-- Adventure Platform Bukkit -->
       <dependency>

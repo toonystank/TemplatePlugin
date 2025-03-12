@@ -1,12 +1,12 @@
-package com.toonystank.requisitertp.utils;
+package com.toonystank.templateplugin.utils;
 
-import com.toonystank.requisitertp.RequisiteRTP;
+import com.toonystank.templateplugin.TemplatePlugin;
 import de.themoep.minedown.adventure.MineDown;
-import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.title.Title;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
@@ -72,13 +72,14 @@ public class MessageUtils {
             sendMessage(sender,message);
             return;
         }
-        Player player = (Player) sender;
-        message = formatString(message);
-        player.sendTitle(message,"");
+        final Player player = (Player) sender;
+        final Component mainTitle = format(message);
+        final Title title = Title.title(mainTitle, Component.empty());
+        audience.sender(player).showTitle(title);
     }
     public static void sendMessage(CommandSender sender, String message) {
         MessageUtils.toConsole(message  + "  sending to player " + sender ,true );
-        if (RequisiteRTP.getInstance().getMainConfig().isSmallText()) {
+        if (TemplatePlugin.getInstance().getMainConfig().isSmallText()) {
             message = SmallLetterConvertor.convert(message);
         }
         Component component = new MineDown(message).toComponent();
@@ -124,22 +125,22 @@ public class MessageUtils {
     }
     public static void toConsole(String message, boolean debug) {
         if (debug) {
-            if (!RequisiteRTP.getInstance().getMainConfig().isDebug()) return;
+            if (!TemplatePlugin.getInstance().getMainConfig().isDebug()) return;
         }
-        message = "&a[RequisiteRTP]&r " + message;
+        message = "&a[TemplatePlugin]&r " + message;
         Component component = new MineDown(message).toComponent();
         toConsole(component, debug);
     }
     public static void toConsole(Component component, boolean debug) {
         if (debug) {
-            if (!RequisiteRTP.getInstance().getMainConfig().isDebug()) return;
+            if (!TemplatePlugin.getInstance().getMainConfig().isDebug()) return;
         }
         component = component.decoration(TextDecoration.ITALIC,false);
-        audience.sender(RequisiteRTP.getInstance().getServer().getConsoleSender()).sendMessage(component);
+        audience.sender(TemplatePlugin.getInstance().getServer().getConsoleSender()).sendMessage(component);
     }
     public static void error(String message) {
-        message = message + ". Server version: " + RequisiteRTP.getInstance().getServer().getVersion() + ". Plugin version: " + RequisiteRTP.getInstance().getDescription().getVersion() + ". Please report this error to the plugin developer.";
-        message = "[RequisiteRTP] " + message;
+        message = message + ". Server version: " + TemplatePlugin.getInstance().getServer().getVersion() + ". Plugin version: " + TemplatePlugin.getInstance().getDescription().getVersion() + ". Please report this error to the plugin developer.";
+        message = "[" + TemplatePlugin.getInstance().getPluginName()+ "] " + message;
         Component component = new MineDown(message).toComponent();
         error(component);
     }
@@ -147,34 +148,34 @@ public class MessageUtils {
         try {
             component = component.decoration(TextDecoration.ITALIC, false);
             component = component.color(TextColor.fromHexString("#CF203E"));
-            audience.sender(RequisiteRTP.getInstance().getServer().getConsoleSender()).sendMessage(component);
+            audience.sender(TemplatePlugin.getInstance().getServer().getConsoleSender()).sendMessage(component);
         } catch (NullPointerException ignored) {
             error("an error occurred while sending a message");
         }
     }
     public static void debug(String message) {
-        if (!RequisiteRTP.getInstance().getMainConfig().isDebug()) return;
-        message = message + ". Server version: " + RequisiteRTP.getInstance().getServer().getVersion() + ". Plugin version: " + RequisiteRTP.getInstance().getDescription().getVersion() + ". To stop receiving this messages please update your config.yml";
+        if (!TemplatePlugin.getInstance().getMainConfig().isDebug()) return;
+        message = message + ". Server version: " + TemplatePlugin.getInstance().getServer().getVersion() + ". Plugin version: " + TemplatePlugin.getInstance().getDescription().getVersion() + ". To stop receiving this messages please update your config.yml";
         Component component = new MineDown(message).toComponent();
         debug(component);
     }
     public static void debug(Component component) {
         try {
             component = component.decoration(TextDecoration.ITALIC, false);
-            audience.sender(RequisiteRTP.getInstance().getServer().getConsoleSender()).sendMessage(component);
+            audience.sender(TemplatePlugin.getInstance().getServer().getConsoleSender()).sendMessage(component);
         } catch (NullPointerException ignored) {
             error("an error occurred while sending a message");
         }
     }
     public static void warning(String message) {
-        message = "[RequisiteRTP] " + message;
+        message = "[" + TemplatePlugin.getInstance().getPluginName()+ "] " + message;
         Component component = new MineDown(message).toComponent();
         warning(component);
     }
     public static void warning(Component component) {
         component = component.decoration(TextDecoration.ITALIC,false);
         component = component.color(TextColor.fromHexString("#FFC107"));
-        audience.sender(RequisiteRTP.getInstance().getServer().getConsoleSender()).sendMessage(component);
+        audience.sender(TemplatePlugin.getInstance().getServer().getConsoleSender()).sendMessage(component);
     }
     public static String replaceGrayWithWhite(String inputString) {
         if (inputString.contains("&7")) inputString = inputString.replace("&7", "&f");
