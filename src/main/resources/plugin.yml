@@ -1,0 +1,4 @@
+name: RequisiteRTP
+version: '${project.version}'
+main: com.toonystank.requisitertp.RequisiteRTP
+api-version: '1.13'
