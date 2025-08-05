@@ -1,0 +1,52 @@
+data:
+  menu_title: "&7%requisiteteams_title% (&2/ClaimList&7)"
+  version: "1.0"
+  rows: 6
+  gui_type: TEAM_LIST
+items:
+  goback:
+    material: OAK_DOOR
+    model_data: 0
+    display_name: "&7⟰ &aGo Back"
+    left_click_commands:
+      - "[sound] BLOCK_WOODEN_DOOR_OPEN"
+      - "[player] claim"
+    slot: 45
+  claiminfo:
+    material: MAP
+    model_data: 0
+    display_name: "&7Claim Info &7(&aView&7)"
+    lore:
+      - ""
+      - "&2Description:"
+      - ""
+      - "   &8• &7Teams: &f%requisiteteams_teams_size%"
+      - ""
+    slot: 49
+    bedrock_supported: false
+  Previous:
+    material: ARROW
+    model_data: 0
+    display_name: "&cPrevious Page &7[&a<page>&7/&2<max_page>&7]"
+    lore:
+      - "&7Go to the previous page"
+    slot: 47
+    bedrock_supported: false
+  Next:
+    material: ARROW
+    model_data: 0
+    display_name: "&aNext Page &7[&a<page>&7/&2<max_page>&7]"
+    lore:
+      - "&7Go to the next page"
+    slot: 51
+    bedrock_supported: false
+  TEAM_LIST:
+    display_name: "<teamname>"
+    lore:
+      - "&8Team Owner: &f%requisiteteams_teams_owner_<uuid>%"
+      - ""
+      - "&2Description:"
+      - "   &7Team ID: &f<uuid>"
+      - ""
+      - "   &7<description>"
+      - ""

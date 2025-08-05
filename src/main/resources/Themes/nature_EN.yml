@@ -1,0 +1,58 @@
+items:
+  blue_glass_pane:
+    bedrock_supported: false
+    material: LIGHT_BLUE_STAINED_GLASS_PANE
+    priority: 5
+    display_name: " &r "
+    slots:
+      - 5
+      - 6
+      - 7
+      - 26
+      - 27
+      - 35
+      - 36
+      - 44
+  white_glass_pane:
+    bedrock_supported: false
+    material: WHITE_STAINED_GLASS_PANE
+    priority: 5
+    display_name: " &r "
+    slots:
+      - 1
+      - 3
+      - 4
+      - 17
+      - 18
+  white_glass:
+    bedrock_supported: false
+    material: WHITE_STAINED_GLASS
+    priority: 5
+    display_name: " &r "
+    slots:
+      - 2
+      - 9
+  tall_grass:
+    bedrock_supported: false
+    material: TALL_GRASS
+    priority: 5
+    display_name: " &r "
+    slots:
+      - 47
+      - 48
+      - 51
+      - 52
+  rose:
+    bedrock_supported: false
+    material: ROSE_BUSH
+    priority: 5
+    display_name: " &r "
+    slots:
+      - 46
+  dark_oak:
+    bedrock_supported: false
+    material: DARK_OAK_SAPLING
+    priority: 5
+    display_name: " &r "
+    slots:
+      - 50

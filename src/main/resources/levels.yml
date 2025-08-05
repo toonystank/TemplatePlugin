@@ -1,0 +1,40 @@
+# Defines the range of levels (e.g., 1 to 100)
+level-range: 1-100
+
+# Default XP requirements: base + (level - 1) * increment
+default-xp:
+  base: 1000
+  increment: 500
+
+# Default requirements applied to all levels unless overridden
+default-requirements:
+  - type: vault_balance
+    value: 1000.0
+
+# Specific level overrides
+levels:
+  10:
+    xpRequired: 6000
+    requirements:
+      - type: member_count
+        value: 3
+      - type: vault_balance
+        value: 50000.0
+  20:
+    xpRequired: 11000
+    requirements:
+      - type: member_count
+        value: 5
+      - type: vault_balance
+        value: 100000.0
+      - type: custom_achievement
+        value: "first_victory"
+  50:
+    xpRequired: 26000
+    requirements:
+      - type: member_count
+        value: 10
+      - type: vault_balance
+        value: 250000.0
+      - type: custom_achievement
+        value: "elite_warrior"

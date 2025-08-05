@@ -1,0 +1,25 @@
+ranks:
+  Owner:
+    display_name: '&4[Owner] '
+    priority: 1000
+    is_owner: true
+    permissions:
+      - '*'
+  Manager:
+    display_name: '&c[Manager] '
+    priority: 900
+    parent: Member
+    permissions:
+      - ADD
+      - REMOVE
+      - PROMOTE
+      - DEMOTE
+      - CHANGE_NAME
+      - CHANGE_DESCRIPTION
+  Member:
+    display_name: '&a[Member] '
+    priority: 100
+    is_default: true
+    permissions:
+      - CHAT
+      - CONTRIBUTE_XP

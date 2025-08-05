@@ -1,4 +1,9 @@
-name: TemplatePlugin
+name: RequisiteTeams
 version: '${project.version}'
-main: com.toonystank.templateplugn.TemplatePlugin
-api-version: '1.13'
+main: com.toonystank.requisiteteams.RequisiteTeams
+api-version: '1.21'
+libraries:
+  - net.kyori:adventure-api:4.22.0
+  - net.kyori:adventure-text-serializer-legacy:4.22.0
+  - net.kyori:adventure-text-serializer-gson:4.22.0
+  - net.kyori:adventure-text-minimessage:4.22.0
